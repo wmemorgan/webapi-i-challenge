@@ -95,9 +95,96 @@ server.delete(`/api/users/:id`, (req, res) => {
 
 })
 
-
 // Update - update/change existing data
+server.put(`/api/users/:id`, (req, res) => {
 
+  const { id } = req.params
+  const { name, bio } = req.body
+  if (!name || !bio) {
+    res.status(400).json({errorMessage: `Please provide name and bio for the user`})
+    return null
+  } else {
+    findById(id)
+    .then(foundUser => {
+      if(!foundUser) {
+        res.status(404).json({ error: `User ${id} does not exist` })
+      } else {
+        update(id, req.body)
+        .then(count => {
+          if (!count) {
+            console.log(`Issue with update`)
+          } else {
+            findById(id)
+            .then(updatedUser => res.status(200).json(updatedUser))
+          }
+        })
+      }
+    })
+    .catch(() => res.status(500).json({error: `The user information could not be modified`}))
+  }
+  
+  // Solution #2
+//   const { id } = req.params
+//   const { name, bio } = req.body
+//   if (!name || !bio) {
+//     res.status(400).json({errorMessage: `Please provide name and bio for the user`})
+//     return null
+//   } 
+//   else {
+//     findById(id)
+//     .then(user => {
+//       if (!user) {
+//         throw err
+//       } else {
+//         update(user.id, dsfdsafds)
+//         .then(count => {
+//           if (!count) {
+//             console.log(`record not updated count: ${count}`)
+//             res.status(500).json({ error: `The user information could not be modified` })
+//           } else {
+//             findById(user.id)
+//             .then(updatedUser => res.status(200).json(updatedUser))
+//           }
+//         })
+//        }
+//     }).catch(() => res.status(404).json({ error: `User ${id} does not exist` }))
+// }
+
+  // //Solution #1
+  // const { name, bio } = req.body
+  //  // Check edge case
+  // if (!name || !bio) {
+  //   res.status(400).json({ errorMessage: `Please provide name and bio for the user.` })
+  //   return null
+  // }
+  
+  // const { id } = req.params
+  // findById(id)
+  // .then(user => {
+  //   // Check edge case
+  //   if (!user) { 
+  //     throw err
+  //   } else {
+  //     update(id, dsfsdfds)
+  //       .then(count => {
+  //         if (count!==1) {
+  //           throw err
+  //         } else {
+  //           findById(user.id)
+  //           .then(updatedUser => {
+  //             res.status(200).json(updatedUser)
+  //           })
+  //         }
+  //       })
+  //       .catch(() => res.status(500).json({
+  //         error: `The user information could not be modified`
+  //       })
+  //     )
+  //   }
+  // })
+  // .catch(() => res.status(404).json({ error: `User ${id} does not exist` }))
+
+})
 
 server.listen(port, () => {
   console.log(`Server running on port ${port}`)
