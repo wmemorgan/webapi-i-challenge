@@ -10,7 +10,7 @@ server = express()
 port = 5000
 
 // Load JSON parsing middleware
-server.use(express())
+server.use(express.json())
 
 // Base route to verify working server
 server.get('/', (req, res) => {
@@ -42,6 +42,21 @@ server.get('/api/users/:id', (req, res) => {
 })
 
 // Create - create new user
+server.post('/api/users', (req, res) => {
+  const { name, bio } = req.body
+  console.log(`Create user request: ${JSON.stringify(req.body)}`)
+  if(!name || !bio) {
+    res.status(400).json({errorMessage: `Please provide name and bio for the user.`})
+  } else {
+    insert(req.body)
+    .then(newUser => {
+      res.status(201).json(newUser)
+    })
+    .catch(err => {
+      res.status(500).json(err)
+    })   
+  }
+})
 
 // Destroy - delete existing user
 
