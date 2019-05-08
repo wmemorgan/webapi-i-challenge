@@ -25,7 +25,7 @@ server.get('/api/users', (req, res) => {
     res.send(users)
   })
   .catch(err => {
-    res.status(500).json(err)
+    res.status(500).json({error: "The users information could not be retrieved."})
   })
 })
 
@@ -34,10 +34,15 @@ server.get('/api/users/:id', (req, res) => {
   console.log(`Requesting id: ${id}`)
   findById(id)
   .then(user => {
-    res.send(user)
+    if(user) {
+      res.send(user)
+    } else {
+      res.status(404).json({ message: `The user ID ${id} does not exist.`})
+    }
   })
   .catch(err => {
-    res.status(500).json(err)
+    console.log(err)
+    res.status(500).json({error: `The user information could not be retrieved.`})
   })
 })
 
