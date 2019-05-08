@@ -57,13 +57,44 @@ server.post('/api/users', (req, res) => {
     .then(newUser => {
       res.status(201).json(newUser)
     })
-    .catch(err => {
-      res.status(500).json(err)
+    .catch(() => {
+      res.status(500).json({error: `There was an error while saving the user to the database.`})
     })   
   }
 })
 
 // Destroy - delete existing user
+server.delete(`/api/users/:id`, (req, res) => {
+  const { id } = req.params
+  console.log(`delete request received for user ${id}`)
+
+  // Solution #1
+  findById(id)
+  .then(user => {
+    if(user) {
+      remove(user.id)
+      .then(() => res.json({message: `User ${user.id} removed from the database`}))
+      .catch(() => res.status(500).json({error: `The user information could not be retrieved`}))
+    } else {
+      res.status(404).json({error: `User ${id} does not exist`})
+    }
+  })
+  .catch(() => res.status(500).json({error: `The user could not be removed`}))
+
+  // Solution #2
+  // findById(id)
+  // .then(user => {
+  //   if(!user) {
+  //     res.status(404).json({ error: `User ${id} does not exist` })
+  //   } else {
+  //     remove(user.id)
+  //     .then(() => res.json({message: `User ${id} removed`}))
+  //   }
+  // })
+  // .catch(() => res.status(500).json({error: `The user could not be removed`}))
+
+})
+
 
 // Update - update/change existing data
 
