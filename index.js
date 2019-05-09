@@ -73,7 +73,14 @@ server.delete(`/api/users/:id`, (req, res) => {
   .then(user => {
     if(user) {
       remove(user.id)
-      .then(() => res.json({message: `User ${user.id} removed from the database`}))
+      .then(response => {
+        console.log(response)
+        if (response === 1) {
+          res.json({ message: `User ${user.id} removed from the database` })
+        } else {
+          throw err
+        }
+      })
       .catch(() => res.status(500).json({error: `The user information could not be retrieved`}))
     } else {
       res.status(404).json({error: `User ${id} does not exist`})
@@ -98,6 +105,7 @@ server.delete(`/api/users/:id`, (req, res) => {
 // Update - update/change existing data
 server.put(`/api/users/:id`, (req, res) => {
 
+  // Solution #3
   const { id } = req.params
   const { name, bio } = req.body
   if (!name || !bio) {
